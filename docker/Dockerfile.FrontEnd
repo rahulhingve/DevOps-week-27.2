@@ -4,15 +4,17 @@ WORKDIR /app
 
 ARG DATABASE_URL
 
-COPY ../packages ./packages
+COPY packages ./packages/
 
-COPY ../bun.lock ./bun.lock
+COPY bun.lock ./bun.lock
 
-COPY ../apps/backend/package*.json ./apps/backend/
+COPY apps/web/package*.json ./apps/backend/
 
-COPY ../apps/web ./apps/web
+COPY apps/web ./apps/web
 
 COPY . .
+
+RUN bun add -d @types/minimatch
 
 RUN bun install
 
