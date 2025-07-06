@@ -23,8 +23,6 @@ jobs:
         with:
           context: .
           file: ./docker/Dockerfile.WebSocket
-          build-args: 
-            - DATABASE_URL=${{ secrets.DATABASE_URL }}
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/todo-app-websocket:${{ github.sha }}   
       
