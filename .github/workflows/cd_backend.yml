@@ -26,9 +26,13 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/todo-app-backend:${{ github.sha }}   
       - name: Deploy to server
-        run: |
-          echo "${ secrets.SSH_PRIVATE_KEY }" &> ~/ssh_key
-          mkdir -p /home/runner/.ssh
-          ls /home/runner/.ssh
-          chmod 700 /home/runner/ssh_key
-          ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@${{ secrets.SSH_HOST }} -t "docker stop todo-app-backend && docker run --name todo-app-backend -d -p 8081:8081 ${{ secrets.DOCKER_USERNAME }}/todo-app-backend:${{ github.sha }}"
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/todo-app-backend:${{ github.sha }}
+            docker stop todo-app-backend || true
+            docker rm todo-app-backend || true
+            docker run --name todo-app-backend -d -p 8081:8081 ${{ secrets.DOCKER_USERNAME }}/todo-app-backend:${{ github.sha }}
